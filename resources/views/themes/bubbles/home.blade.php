@@ -106,7 +106,7 @@
 </section>
 
 <section class="mx-auto max-w-7xl px-4 py-10">
-    <div class="grid gap-4 sm:grid-cols-3">
+    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
         <div class="bubble-card reveal p-6 text-center">
             <p class="font-display text-3xl font-extrabold text-[color:var(--rose)]" data-counter="{{ $categories->count() }}">0</p>
             <p class="mt-1 text-sm text-[color:var(--muted)]">{{ __('Gift collections count') }}</p>
@@ -127,7 +127,7 @@
         <h2 class="section-title">{{ __(':shop collections', ['shop' => $shop->name ?? 'Bubbles']) }}</h2>
         <p class="section-sub mx-auto">{{ __('Luxury categories in a distinctive feminine layout.') }}</p>
     </div>
-    <div class="grid auto-rows-[180px] gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:auto-rows-[200px]">
+    <div class="grid grid-cols-2 auto-rows-[180px] gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:auto-rows-[200px]">
         @forelse ($categories as $index => $category)
             <a href="{{ shop_url('categories.show', $category->slug) }}"
                class="bubble-card reveal group relative block overflow-hidden {{ $index === 0 ? 'bento-featured' : '' }}"
@@ -157,7 +157,7 @@
             <h2 class="section-title">{{ __('Latest gifts') }}</h2>
             <p class="section-sub">{{ __('Newly arrived at :shop.', ['shop' => $shop->name ?? 'Bubbles']) }}</p>
         </div>
-        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             @foreach ($latest as $product)
                 <div class="reveal">@include('themes.bubbles.partials.product-card', ['product' => $product])</div>
             @endforeach
@@ -170,7 +170,7 @@
         <h2 class="section-title">{{ __('Special offers') }}</h2>
         <p class="section-sub">{{ __('Gifts at special prices for a limited time.') }}</p>
     </div>
-    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         @forelse ($offers as $product)
             <div class="reveal">@include('themes.bubbles.partials.product-card', ['product' => $product])</div>
         @empty
@@ -184,7 +184,7 @@
         <h2 class="section-title">{{ __('How reservations work') }}</h2>
         <p class="section-sub mx-auto">{{ __('Three simple steps with no account required.') }}</p>
     </div>
-    <div class="grid gap-6 md:grid-cols-3">
+    <div class="grid grid-cols-2 gap-6 md:grid-cols-3">
         @foreach ([
             ['1', __('Choose your gift'), __('Browse collections and add what you like to the reservation cart.')],
             ['2', __('Enter your details'), __('Name and mobile number are required to complete the order.')],

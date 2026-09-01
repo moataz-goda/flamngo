@@ -9,7 +9,7 @@
         <p class="section-sub">{{ __('Gifts you saved to come back to later.') }}</p>
     </div>
 
-    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         @forelse ($products as $product)
             <div class="reveal">@include('themes.flamingo.partials.product-card', ['product' => $product])</div>
         @empty

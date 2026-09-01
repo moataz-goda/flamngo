@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'status',
     'admin_note',
     'total',
+    'discount_type',
+    'discount_value',
     'decided_at',
     'decided_by',
 ])]
@@ -34,6 +36,7 @@ class Reservation extends Model
     {
         return [
             'total' => 'decimal:2',
+            'discount_value' => 'decimal:2',
             'decided_at' => 'datetime',
         ];
     }

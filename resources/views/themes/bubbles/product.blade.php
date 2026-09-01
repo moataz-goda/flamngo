@@ -94,7 +94,7 @@
     @if (isset($related) && $related->isNotEmpty())
         <div class="mt-16">
             <h2 class="section-title mb-6">{{ __('Related products') }}</h2>
-            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($related as $item)
                     @include('themes.bubbles.partials.product-card', ['product' => $item])
                 @endforeach
@@ -105,7 +105,7 @@
     @if (isset($recentlyViewed) && $recentlyViewed->isNotEmpty())
         <div class="mt-16">
             <h2 class="section-title mb-6">{{ __('Recently viewed') }}</h2>
-            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($recentlyViewed as $item)
                     @include('themes.bubbles.partials.product-card', ['product' => $item])
                 @endforeach

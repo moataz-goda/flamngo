@@ -98,7 +98,7 @@
         <h2 class="section-title">{{ __('Gift collections') }}</h2>
         <p class="section-sub mx-auto">{{ __('Categories curated by the :shop team to help you find the perfect gift.', ['shop' => $shop->name ?? 'Flamingo']) }}</p>
     </div>
-    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         @forelse ($categories as $category)
             <a href="{{ shop_url('categories.show', $category->slug) }}" class="gift-card reveal group block" data-tilt data-cursor="view">
                 <div class="img-zoom aspect-[16/10]">
@@ -132,7 +132,7 @@
                 <p class="section-sub">{{ __('Newly arrived at :shop.', ['shop' => $shop->name ?? 'Flamingo']) }}</p>
             </div>
         </div>
-        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             @foreach ($latest as $product)
                 <div class="reveal">@include('themes.flamingo.partials.product-card', ['product' => $product])</div>
             @endforeach
@@ -145,7 +145,7 @@
         <h2 class="section-title">{{ __('Browse offers') }}</h2>
         <p class="section-sub">{{ __('Gifts at special prices for a limited time.') }}</p>
     </div>
-    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         @forelse ($offers as $product)
             <div class="reveal">@include('themes.flamingo.partials.product-card', ['product' => $product])</div>
         @empty
@@ -159,7 +159,7 @@
         <h2 class="section-title">{{ __('How reservations work') }}</h2>
         <p class="section-sub mx-auto">{{ __('Three simple steps with no account required.') }}</p>
     </div>
-    <div class="grid gap-6 md:grid-cols-3">
+    <div class="grid grid-cols-2 gap-6 md:grid-cols-3">
         @foreach ([
             ['1', __('Choose your gift'), __('Browse collections and add what you like to the reservation cart.')],
             ['2', __('Enter your details'), __('Name and mobile number are required to complete the order.')],

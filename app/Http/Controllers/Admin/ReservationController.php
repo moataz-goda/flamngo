@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ApplyReservationDiscountRequest;
 use App\Http\Requests\Admin\UpdateReservationRequest;
 use App\Models\Reservation;
 use App\Services\AuthorizationService;
@@ -53,6 +54,29 @@ class ReservationController extends Controller
                 Reservation::class,
                 $reservation,
                 __('Reservation updated and stock adjusted.'),
+            );
+        } catch (\RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function applyDiscount(ApplyReservationDiscountRequest $request, int $reservation): RedirectResponse
+    {
+        $type = $request->discountType();
+        $value = $request->discountValue();
+
+        try {
+            return $this->authorizer->runOrQueue(
+                $request->user(),
+                'reservations.decide',
+                'reservation.apply_discount',
+                ['reservation_id' => $reservation, 'discount_type' => $type, 'discount_value' => $value],
+                function () use ($reservation, $type, $value) {
+                    $this->reservations->applyDiscount($reservation, $type, $value);
+                },
+                Reservation::class,
+                $reservation,
+                __('Discount updated.'),
             );
         } catch (\RuntimeException $e) {
             return back()->with('error', $e->getMessage());

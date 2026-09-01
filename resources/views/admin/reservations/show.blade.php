@@ -42,12 +42,14 @@
             @endif
         </div>
 
+        @php($subtotal = $reservation->items->sum('line_total'))
+        @php($discountAmount = max(0, $subtotal - (float) $reservation->total))
         <div class="admin-card p-0">
             <div class="border-b border-stone-100 px-5 py-4">
                 <h2 class="font-display text-lg font-extrabold text-[color:var(--plum)]">{{ __('Products') }}</h2>
             </div>
             @if ($reservation->isPending() && auth()->user()?->canPermission('reservations.decide'))
-                <form action="{{ route('admin.reservations.update', $reservation) }}" method="POST" id="items-form" data-currency-symbol="{{ currency_symbol() }}">
+                <form action="{{ route('admin.reservations.update', $reservation) }}" method="POST" id="items-form" data-currency-symbol="{{ currency_symbol() }}" data-discount-type="{{ $reservation->discount_type }}" data-discount-value="{{ $reservation->discount_value ?? 0 }}">
                     @csrf
                     @method('PUT')
                     <div class="admin-data-table p-2 sm:p-3">
@@ -85,6 +87,14 @@
                             </tbody>
                             <tfoot>
                                 <tr>
+                                    <td colspan="6" class="is-num text-[color:var(--muted)]">{{ __('Subtotal') }}</td>
+                                    <td class="is-num" id="items-subtotal">{{ money($subtotal) }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6" class="is-num text-[color:var(--muted)]">{{ __('Discount') }}</td>
+                                    <td class="is-num text-rose-600" id="items-discount">- {{ money($discountAmount) }}</td>
+                                </tr>
+                                <tr>
                                     <td colspan="6" class="is-num text-[color:var(--muted)]">{{ __('Reservation total') }}</td>
                                     <td class="is-num font-display text-lg font-extrabold text-[color:var(--plum)]" id="items-grand-total">{{ money($reservation->total) }}</td>
                                 </tr>
@@ -94,6 +104,23 @@
                     <div class="border-t border-stone-100 px-5 py-4">
                         <button type="submit" id="items-save" class="rounded-full bg-[color:var(--plum)] px-5 py-3 text-sm font-bold text-white">{{ __('Save changes') }}</button>
                     </div>
+                </form>
+
+                <form action="{{ route('admin.reservations.discount', $reservation) }}" method="POST" class="flex flex-wrap items-end gap-3 border-t border-stone-100 px-5 py-4">
+                    @csrf
+                    <div>
+                        <label class="mb-1 block text-xs font-bold text-[color:var(--muted)]">{{ __('Discount type') }}</label>
+                        <select name="discount_type" class="admin-input">
+                            <option value="" @selected(! $reservation->discount_type)>{{ __('No discount') }}</option>
+                            <option value="fixed" @selected($reservation->discount_type === 'fixed')>{{ __('Fixed amount') }}</option>
+                            <option value="percentage" @selected($reservation->discount_type === 'percentage')>{{ __('Percentage') }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="mb-1 block text-xs font-bold text-[color:var(--muted)]">{{ __('Value') }}</label>
+                        <input type="number" min="0" step="0.01" name="discount_value" value="{{ $reservation->discount_value ?? 0 }}" class="admin-input" style="width: 8rem;">
+                    </div>
+                    <button type="submit" class="rounded-full bg-[color:var(--violet)] px-5 py-3 text-sm font-bold text-white">{{ __('Apply discount') }}</button>
                 </form>
             @else
                 <div class="admin-data-table p-2 sm:p-3">
@@ -121,6 +148,14 @@
                             @endforeach
                         </tbody>
                         <tfoot>
+                            <tr>
+                                <td colspan="5" class="is-num text-[color:var(--muted)]">{{ __('Subtotal') }}</td>
+                                <td class="is-num">{{ money($subtotal) }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="5" class="is-num text-[color:var(--muted)]">{{ __('Discount') }}</td>
+                                <td class="is-num text-rose-600">- {{ money($discountAmount) }}</td>
+                            </tr>
                             <tr>
                                 <td colspan="5" class="is-num text-[color:var(--muted)]">{{ __('Reservation total') }}</td>
                                 <td class="is-num font-display text-lg font-extrabold text-[color:var(--plum)]">{{ money($reservation->total) }}</td>
@@ -170,13 +205,17 @@
     if (! form) return;
 
     const currencySymbol = form.dataset.currencySymbol || '';
+    const discountType = form.dataset.discountType || '';
+    const discountValue = parseFloat(form.dataset.discountValue) || 0;
+    const subtotalCell = document.getElementById('items-subtotal');
+    const discountCell = document.getElementById('items-discount');
     const grandTotalCell = document.getElementById('items-grand-total');
     const saveButton = document.getElementById('items-save');
 
     const money = (amount) => `${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currencySymbol}`;
 
     const recalculate = () => {
-        let grandTotal = 0;
+        let subtotal = 0;
 
         form.querySelectorAll('.item-row').forEach((row) => {
             const unitPrice = parseFloat(row.dataset.unitPrice) || 0;
@@ -185,10 +224,20 @@
             const lineTotal = unitPrice * quantity;
 
             row.querySelector('.item-line-total').textContent = money(lineTotal);
-            grandTotal += lineTotal;
+            subtotal += lineTotal;
         });
 
-        grandTotalCell.textContent = money(grandTotal);
+        let discountAmount = 0;
+        if (discountType === 'percentage') {
+            discountAmount = subtotal * discountValue / 100;
+        } else if (discountType === 'fixed') {
+            discountAmount = discountValue;
+        }
+        discountAmount = Math.min(Math.max(0, discountAmount), subtotal);
+
+        subtotalCell.textContent = money(subtotal);
+        discountCell.textContent = `- ${money(discountAmount)}`;
+        grandTotalCell.textContent = money(subtotal - discountAmount);
 
         const remaining = form.querySelectorAll('.item-row').length;
         saveButton.disabled = remaining === 0;

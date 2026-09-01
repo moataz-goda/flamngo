@@ -264,7 +264,8 @@ class ReservationService
                 $total += $lineTotal;
             }
 
-            $reservation->update(['total' => $total]);
+            $discount = $this->discountAmountFor($total, $reservation->discount_type, $reservation->discount_value);
+            $reservation->update(['total' => max(0, $total - $discount)]);
 
             $this->activity->log(
                 'reservation.items_updated',
@@ -275,6 +276,57 @@ class ReservationService
 
             return $reservation->fresh(['items', 'decidedByUser']);
         });
+    }
+
+    public function applyDiscount(int $id, ?string $type, ?float $value): Reservation
+    {
+        return DB::transaction(function () use ($id, $type, $value) {
+            $reservation = Reservation::query()->with('items')->lockForUpdate()->findOrFail($id);
+
+            if (! $reservation->isPending()) {
+                throw new \RuntimeException(__('Only pending reservations can be edited.'));
+            }
+
+            $type = $type ?: null;
+            $value = $type ? max(0, (float) $value) : 0;
+
+            if ($type === 'percentage') {
+                $value = min($value, 100);
+            }
+
+            $subtotal = (float) $reservation->items->sum('line_total');
+            $discount = $this->discountAmountFor($subtotal, $type, $value);
+
+            $reservation->update([
+                'discount_type' => $type,
+                'discount_value' => $value,
+                'total' => max(0, $subtotal - $discount),
+            ]);
+
+            $this->activity->log(
+                'reservation.discount_applied',
+                $reservation,
+                $type
+                    ? __('Applied discount to reservation :ref', ['ref' => $reservation->reference])
+                    : __('Removed discount from reservation :ref', ['ref' => $reservation->reference]),
+                ['discount_type' => $type, 'discount_value' => $value]
+            );
+
+            return $reservation->fresh(['items', 'decidedByUser']);
+        });
+    }
+
+    protected function discountAmountFor(float $subtotal, ?string $type, $value): float
+    {
+        $value = (float) ($value ?? 0);
+
+        $amount = match ($type) {
+            'percentage' => $subtotal * $value / 100,
+            'fixed' => $value,
+            default => 0.0,
+        };
+
+        return min(max(0, $amount), $subtotal);
     }
 
     /**

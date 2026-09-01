@@ -99,7 +99,7 @@
                 </form>
             @endif
 
-            <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div class="grid grid-cols-2 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 @forelse ($products as $product)
                     <div class="reveal">@include('themes.bubbles.partials.product-card', ['product' => $product])</div>
                 @empty

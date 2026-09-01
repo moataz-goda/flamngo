@@ -203,6 +203,11 @@ class ApprovalRequestService
                 (int) ($payload['reservation_id'] ?? $request->subject_id),
                 $payload['items'] ?? []
             ),
+            'reservation.apply_discount' => $this->reservations->applyDiscount(
+                (int) ($payload['reservation_id'] ?? $request->subject_id),
+                $payload['discount_type'] ?? null,
+                isset($payload['discount_value']) ? (float) $payload['discount_value'] : null
+            ),
             default => throw new \RuntimeException(__('Unknown approval action.')),
         };
     }

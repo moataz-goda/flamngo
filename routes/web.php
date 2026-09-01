@@ -100,6 +100,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
         Route::middleware('permission:reservations.decide')->group(function () {
             Route::put('reservations/{reservation}', [AdminReservationController::class, 'update'])->name('reservations.update');
+            Route::post('reservations/{reservation}/discount', [AdminReservationController::class, 'applyDiscount'])->name('reservations.discount');
             Route::post('reservations/{reservation}/accept', [AdminReservationController::class, 'accept'])->name('reservations.accept');
             Route::post('reservations/{reservation}/reject', [AdminReservationController::class, 'reject'])->name('reservations.reject');
         });

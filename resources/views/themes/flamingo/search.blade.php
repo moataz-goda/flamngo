@@ -11,7 +11,7 @@
             <input type="search" name="q" value="{{ $term }}" placeholder="{{ __('Search gifts...') }}" class="search-pill">
         </form>
     </div>
-    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         @forelse ($products as $product)
             <div class="reveal">@include('themes.flamingo.partials.product-card', ['product' => $product])</div>
         @empty
