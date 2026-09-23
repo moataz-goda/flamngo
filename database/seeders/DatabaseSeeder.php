@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ShopSeeder::class,
             PermissionSeeder::class,
+            GovernorateSeeder::class,
             GiftCatalogSeeder::class,
         ]);
     }

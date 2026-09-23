@@ -42,7 +42,19 @@
                             <span>{{ money($item->line_total) }}</span>
                         </li>
                     @endforeach
+                    @if ($reservation->governorate)
+                        <li class="flex justify-between gap-3 border-b border-[color:var(--blush)]/50 py-2">
+                            <span>{{ __('Shipping') }} ({{ $reservation->governorate->t('name') }})</span>
+                            <span>{{ money($reservation->shipping_cost) }}</span>
+                        </li>
+                    @endif
                 </ul>
+                @if (! $reservation->isPending() && $reservation->admin_note)
+                    <div class="mt-4 rounded-xl bg-[color:var(--cream)] p-3 text-sm">
+                        <p class="font-bold text-[color:var(--berry)]">{{ __('Note from the shop') }}</p>
+                        <p class="mt-1 text-[color:var(--muted)]">{{ $reservation->admin_note }}</p>
+                    </div>
+                @endif
             @else
                 <p class="text-center text-rose-600">{{ __('No reservation found with these details.') }}</p>
             @endif

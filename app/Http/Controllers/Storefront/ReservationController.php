@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Storefront;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Storefront\StoreReservationRequest;
+use App\Models\Governorate;
 use App\Services\CartService;
 use App\Services\ReservationService;
 use Illuminate\Http\RedirectResponse;
@@ -27,6 +28,7 @@ class ReservationController extends Controller
         return view(theme_view('reservation'), [
             'items' => $this->cart->items(),
             'total' => $this->cart->total(),
+            'governorates' => Governorate::query()->orderBy('sort_order')->get(),
         ]);
     }
 

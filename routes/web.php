@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\ApprovalController;
 use App\Http\Controllers\Admin\BannerController as AdminBannerController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\GovernorateController;
 use App\Http\Controllers\Admin\MyApprovalRequestController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ReportController;
@@ -121,6 +122,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('settings', [ShopSettingsController::class, 'edit'])->name('settings.edit');
             Route::put('settings', [ShopSettingsController::class, 'update'])->name('settings.update');
             Route::post('settings/colors/restore', [ShopSettingsController::class, 'restoreColors'])->name('settings.colors.restore');
+            Route::get('governorates', [GovernorateController::class, 'edit'])->name('governorates.edit');
+            Route::post('governorates', [GovernorateController::class, 'store'])->name('governorates.store');
+            Route::put('governorates', [GovernorateController::class, 'update'])->name('governorates.update');
             Route::get('staff', [StaffController::class, 'index'])->name('staff.index');
             Route::post('staff', [StaffController::class, 'store'])->name('staff.store');
             Route::put('staff/{staff}', [StaffController::class, 'update'])->name('staff.update');

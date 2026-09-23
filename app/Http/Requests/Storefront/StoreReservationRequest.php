@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Storefront;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreReservationRequest extends FormRequest
 {
@@ -18,6 +19,12 @@ class StoreReservationRequest extends FormRequest
             // Egyptian mobile: 010/011/012/015 + 8 digits (11 total), or +20 / 20 prefix
             'phone' => ['required', 'string', 'regex:/^(?:\+?20|0)?1[0125][0-9]{8}$/'],
             'note' => ['nullable', 'string', 'max:1000'],
+            'governorate_id' => [
+                'required',
+                'integer',
+                Rule::exists('governorates', 'id')->where('shop_id', current_shop()?->id),
+            ],
+            'address' => ['required', 'string', 'max:500'],
         ];
     }
 
@@ -27,6 +34,9 @@ class StoreReservationRequest extends FormRequest
             'customer_name.required' => 'الاسم مطلوب.',
             'phone.required' => 'رقم الموبايل مطلوب.',
             'phone.regex' => 'يرجى إدخال رقم موبايل مصري صحيح (مثال: 01012345678).',
+            'governorate_id.required' => 'يرجى اختيار المحافظة.',
+            'governorate_id.exists' => 'المحافظة المختارة غير صحيحة.',
+            'address.required' => 'يرجى إدخال تفاصيل العنوان.',
         ];
     }
 

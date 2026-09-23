@@ -17,7 +17,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     public function findByReference(string $reference)
     {
         return $this->model->newQuery()
-            ->with('items.product.images')
+            ->with(['items.product.images', 'governorate'])
             ->where('reference', $reference)
             ->first();
     }
@@ -25,7 +25,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     public function findByReferenceAndPhone(string $reference, string $phone)
     {
         return $this->model->newQuery()
-            ->with('items')
+            ->with(['items', 'governorate'])
             ->where('reference', $reference)
             ->where('phone', $phone)
             ->first();
@@ -34,7 +34,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     public function filterByStatus(?string $status = null, int $perPage = 15): LengthAwarePaginator
     {
         $query = $this->model->newQuery()
-            ->with(['items.product.category'])
+            ->with(['items.product.category', 'governorate'])
             ->withCount('items')
             ->latest();
 

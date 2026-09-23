@@ -37,6 +37,7 @@
     </main>
 
     @include('themes.flamingo.partials.footer')
+    @include('themes.flamingo.partials.whatsapp-float')
 
     <div id="quick-view-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4" aria-hidden="true">
         <div class="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[2rem] bg-white p-6 shadow-2xl">

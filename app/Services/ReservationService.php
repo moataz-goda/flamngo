@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Contracts\Repositories\ProductRepositoryInterface;
 use App\Contracts\Repositories\ReservationRepositoryInterface;
+use App\Models\Governorate;
 use App\Models\ProductVariant;
 use App\Models\Reservation;
 use App\Models\ReservationItem;
@@ -92,13 +93,18 @@ class ReservationService
                 ];
             }
 
+            $governorate = Governorate::query()->findOrFail($customerData['governorate_id']);
+
             $reservation = $this->reservations->create([
                 'reference' => $this->generateReference(),
                 'customer_name' => $customerData['customer_name'],
                 'phone' => $customerData['phone'],
                 'note' => $customerData['note'] ?? null,
                 'status' => Reservation::STATUS_PENDING,
-                'total' => $total,
+                'governorate_id' => $governorate->id,
+                'address' => $customerData['address'],
+                'shipping_cost' => $governorate->shipping_cost,
+                'total' => $total + (float) $governorate->shipping_cost,
             ]);
 
             foreach ($lineRows as $row) {
@@ -265,7 +271,7 @@ class ReservationService
             }
 
             $discount = $this->discountAmountFor($total, $reservation->discount_type, $reservation->discount_value);
-            $reservation->update(['total' => max(0, $total - $discount)]);
+            $reservation->update(['total' => max(0, $total - $discount) + (float) $reservation->shipping_cost]);
 
             $this->activity->log(
                 'reservation.items_updated',
@@ -300,7 +306,7 @@ class ReservationService
             $reservation->update([
                 'discount_type' => $type,
                 'discount_value' => $value,
-                'total' => max(0, $subtotal - $discount),
+                'total' => max(0, $subtotal - $discount) + (float) $reservation->shipping_cost,
             ]);
 
             $this->activity->log(
@@ -391,6 +397,7 @@ class ReservationService
             'items.product.category',
             'items.variant',
             'decidedByUser',
+            'governorate',
         ]);
     }
 

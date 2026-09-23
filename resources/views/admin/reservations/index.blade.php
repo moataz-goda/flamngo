@@ -30,6 +30,7 @@
                     <th class="is-nowrap">{{ __('Mobile') }}</th>
                     <th>{{ __('Products') }}</th>
                     <th class="is-num">{{ __('Items') }}</th>
+                    <th>{{ __('Governorate') }}</th>
                     <th class="is-num">{{ __('Total') }}</th>
                     <th>{{ __('Status') }}</th>
                     <th>{{ __('Actions') }}</th>
@@ -58,6 +59,7 @@
                             </ul>
                         </td>
                         <td class="is-num">{{ $reservation->items_count ?? $reservation->items->count() }}</td>
+                        <td>{{ $reservation->governorate?->t('name') ?? '—' }}</td>
                         <td class="is-num font-bold">{{ money($reservation->total) }}</td>
                         <td><span class="pill">{{ $reservation->status_label }}</span></td>
                         <td>
@@ -66,7 +68,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" style="text-align:center;padding:2.5rem 0.75rem;" class="text-[color:var(--muted)]">
+                        <td colspan="10" style="text-align:center;padding:2.5rem 0.75rem;" class="text-[color:var(--muted)]">
                             {{ __('No reservations yet.') }}
                         </td>
                     </tr>

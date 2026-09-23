@@ -19,6 +19,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'total',
     'discount_type',
     'discount_value',
+    'governorate_id',
+    'shipping_cost',
+    'address',
     'decided_at',
     'decided_by',
 ])]
@@ -37,6 +40,7 @@ class Reservation extends Model
         return [
             'total' => 'decimal:2',
             'discount_value' => 'decimal:2',
+            'shipping_cost' => 'decimal:2',
             'decided_at' => 'datetime',
         ];
     }
@@ -51,9 +55,33 @@ class Reservation extends Model
         return $this->belongsTo(User::class, 'decided_by');
     }
 
+    public function governorate(): BelongsTo
+    {
+        return $this->belongsTo(Governorate::class);
+    }
+
     public function isPending(): bool
     {
         return $this->status === self::STATUS_PENDING;
+    }
+
+    public function subtotal(): float
+    {
+        return (float) $this->items->sum('line_total');
+    }
+
+    public function discountAmount(): float
+    {
+        $subtotal = $this->subtotal();
+        $value = (float) ($this->discount_value ?? 0);
+
+        $amount = match ($this->discount_type) {
+            'percentage' => $subtotal * $value / 100,
+            'fixed' => $value,
+            default => 0.0,
+        };
+
+        return min(max(0, $amount), $subtotal);
     }
 
     public function getStatusLabelAttribute(): string

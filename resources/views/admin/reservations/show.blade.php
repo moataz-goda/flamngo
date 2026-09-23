@@ -33,7 +33,19 @@
                     <p class="text-xs font-bold text-[color:var(--muted)]">{{ __('Reservation total') }}</p>
                     <p class="mt-1 font-bold" dir="ltr">{{ money($reservation->total) }}</p>
                 </div>
+                @if ($reservation->governorate)
+                    <div>
+                        <p class="text-xs font-bold text-[color:var(--muted)]">{{ __('Governorate') }}</p>
+                        <p class="mt-1 font-bold text-[color:var(--plum)]">{{ $reservation->governorate->t('name') }}</p>
+                    </div>
+                @endif
             </div>
+            @if ($reservation->address)
+                <div class="mt-4 rounded-xl bg-[color:var(--cream)] p-3 text-sm">
+                    <p class="font-bold">{{ __('Address') }}</p>
+                    <p class="mt-1 text-[color:var(--muted)]">{{ $reservation->address }}</p>
+                </div>
+            @endif
             @if ($reservation->note)
                 <div class="mt-4 rounded-xl bg-[color:var(--cream)] p-3 text-sm">
                     <p class="font-bold">{{ __('Customer note') }}</p>
@@ -42,14 +54,14 @@
             @endif
         </div>
 
-        @php($subtotal = $reservation->items->sum('line_total'))
-        @php($discountAmount = max(0, $subtotal - (float) $reservation->total))
+        @php($subtotal = $reservation->subtotal())
+        @php($discountAmount = $reservation->discountAmount())
         <div class="admin-card p-0">
             <div class="border-b border-stone-100 px-5 py-4">
                 <h2 class="font-display text-lg font-extrabold text-[color:var(--plum)]">{{ __('Products') }}</h2>
             </div>
             @if ($reservation->isPending() && auth()->user()?->canPermission('reservations.decide'))
-                <form action="{{ route('admin.reservations.update', $reservation) }}" method="POST" id="items-form" data-currency-symbol="{{ currency_symbol() }}" data-discount-type="{{ $reservation->discount_type }}" data-discount-value="{{ $reservation->discount_value ?? 0 }}">
+                <form action="{{ route('admin.reservations.update', $reservation) }}" method="POST" id="items-form" data-currency-symbol="{{ currency_symbol() }}" data-discount-type="{{ $reservation->discount_type }}" data-discount-value="{{ $reservation->discount_value ?? 0 }}" data-shipping-cost="{{ $reservation->shipping_cost ?? 0 }}">
                     @csrf
                     @method('PUT')
                     <div class="admin-data-table p-2 sm:p-3">
@@ -93,6 +105,10 @@
                                 <tr>
                                     <td colspan="6" class="is-num text-[color:var(--muted)]">{{ __('Discount') }}</td>
                                     <td class="is-num text-rose-600" id="items-discount">- {{ money($discountAmount) }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6" class="is-num text-[color:var(--muted)]">{{ __('Shipping') }}</td>
+                                    <td class="is-num" id="items-shipping">{{ money($reservation->shipping_cost ?? 0) }}</td>
                                 </tr>
                                 <tr>
                                     <td colspan="6" class="is-num text-[color:var(--muted)]">{{ __('Reservation total') }}</td>
@@ -157,6 +173,10 @@
                                 <td class="is-num text-rose-600">- {{ money($discountAmount) }}</td>
                             </tr>
                             <tr>
+                                <td colspan="5" class="is-num text-[color:var(--muted)]">{{ __('Shipping') }}</td>
+                                <td class="is-num">{{ money($reservation->shipping_cost ?? 0) }}</td>
+                            </tr>
+                            <tr>
                                 <td colspan="5" class="is-num text-[color:var(--muted)]">{{ __('Reservation total') }}</td>
                                 <td class="is-num font-display text-lg font-extrabold text-[color:var(--plum)]">{{ money($reservation->total) }}</td>
                             </tr>
@@ -207,6 +227,7 @@
     const currencySymbol = form.dataset.currencySymbol || '';
     const discountType = form.dataset.discountType || '';
     const discountValue = parseFloat(form.dataset.discountValue) || 0;
+    const shippingCost = parseFloat(form.dataset.shippingCost) || 0;
     const subtotalCell = document.getElementById('items-subtotal');
     const discountCell = document.getElementById('items-discount');
     const grandTotalCell = document.getElementById('items-grand-total');
@@ -237,7 +258,7 @@
 
         subtotalCell.textContent = money(subtotal);
         discountCell.textContent = `- ${money(discountAmount)}`;
-        grandTotalCell.textContent = money(subtotal - discountAmount);
+        grandTotalCell.textContent = money(subtotal - discountAmount + shippingCost);
 
         const remaining = form.querySelectorAll('.item-row').length;
         saveButton.disabled = remaining === 0;

@@ -50,6 +50,7 @@
                     </a>
                     <a href="{{ route('admin.roles.index') }}" class="block rounded-xl px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.roles.*') ? 'bg-white/15' : '' }}">{{ __('Roles') }}</a>
                     <a href="{{ route('admin.settings.edit') }}" class="block rounded-xl px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.settings.*') ? 'bg-white/15' : '' }}">{{ __('Shop settings') }}</a>
+                    <a href="{{ route('admin.governorates.edit') }}" class="block rounded-xl px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.governorates.*') ? 'bg-white/15' : '' }}">{{ __('Shipping costs') }}</a>
                     <a href="{{ route('admin.staff.index') }}" class="block rounded-xl px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.staff.*') ? 'bg-white/15' : '' }}">{{ __('Staff') }}</a>
                 @endif
                 <a href="{{ route('home') }}" target="_blank" class="block rounded-xl px-3 py-2 hover:bg-white/10">{{ __('View store') }}</a>
