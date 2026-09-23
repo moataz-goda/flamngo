@@ -59,5 +59,5 @@ jobs:
         run: |
           kubectl set image deployment/laravel-app \
             laravel-app=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image_tag }} \
-            -n laravel-app
-          kubectl rollout status deployment/laravel-app -n laravel-app
+            -n flamingo
+          kubectl rollout status deployment/laravel-app -n flamingo
