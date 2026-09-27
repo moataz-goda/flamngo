@@ -1,5 +1,5 @@
 <?php
-
+.
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\ApprovalController;
 use App\Http\Controllers\Admin\BannerController as AdminBannerController;
